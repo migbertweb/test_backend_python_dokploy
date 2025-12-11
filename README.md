@@ -110,7 +110,7 @@ La documentación interactiva está disponible en: `http://localhost:8000/docs`
 │   ├── deps.py      # Dependencias (Current User)
 │   └── database.py  # Conexión a DB
 ├── Dockerfile       # Configuración Docker
-├── railway.yaml     # Configuración Railway
+├── railpack.json    # Configuración Railpack
 └── requirements.txt # Dependencias
 ```
 
