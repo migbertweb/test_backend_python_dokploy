@@ -68,11 +68,14 @@ Un backend moderno y robusto para la gestión de tareas, construido con FastAPI,
    ```
 
 4. **Variables de Entorno:**
-   Asegúrate de tener un archivo `.env` configurado con la URL de tu base de datos:
+   Crea un archivo `.env` en la raíz (para local) o configúralas en tu plataforma de despliegue (Dokploy/Railway).
 
-   ```bash
-   DATABASE_URL=postgresql+asyncpg://user:password@localhost/dbname
-   ```
+   | Variable                      | Descripción                     | Valor por defecto / Ejemplo              | Requerido |
+   | :---------------------------- | :------------------------------ | :--------------------------------------- | :-------- |
+   | `DATABASE_URL`                | String de conexión a PostgreSQL | `postgresql+asyncpg://user:pass@host/db` | ✅ Sí     |
+   | `SECRET_KEY`                  | Llave para firmar tokens JWT    | `generar_con_openssl_rand_hex_32`        | ✅ Sí     |
+   | `ALGORITHM`                   | Algoritmo de encriptación JWT   | `HS256`                                  | ❌ No     |
+   | `ACCESS_TOKEN_EXPIRE_MINUTES` | Duración del token en minutos   | `30`                                     | ❌ No     |
 
 5. **Iniciar el servidor:**
    ```bash

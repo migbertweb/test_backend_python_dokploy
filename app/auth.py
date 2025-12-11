@@ -9,11 +9,12 @@ from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
+from .database import settings
+
 # Secret key to encode and decode the JWT strings. 
-# Ideally this should be in .env. Using a hardcoded one for this example/dev.
-SECRET_KEY = "SECRET_KEY_GOES_HERE" 
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
