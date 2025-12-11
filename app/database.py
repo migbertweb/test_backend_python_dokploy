@@ -3,7 +3,7 @@ from sqlalchemy.orm import DeclarativeBase
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+asyncpg://piro:gpiro2178@37.27.243.58:5432/saas"
+    DATABASE_URL: str = "postgresql+asyncpg://piro:gpiro2178@serv-saas-0tgrun:5432/saas"
 
     class Config:
         env_file = ".env"
