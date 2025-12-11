@@ -1,84 +1,121 @@
-# Backend de Tareas con FastAPI y Nixpacks 🚀
+# 📝 FastAPI Task Manager
 
-Esta es una aplicación backend simple para gestionar tareas, construida con FastAPI y configurada para ser desplegada fácilmente usando **Nixpacks** en plataformas como Dokploy.
+Un backend moderno y robusto para la gestión de tareas, construido con FastAPI, Python 3.11+, SQLAlchemy y PostgreSQL.
 
-## Características
+**Autor:** Migbert Yanez  
+**GitHub:** [https://github.com/migbertweb](https://github.com/migbertweb)  
+**Licencia:** GPL-3.0
 
-- 🚀 **FastAPI**: Alto rendimiento y fácil de usar.
-- 🗄️ **PostgreSQL**: Persistencia de datos robusta (vía SQLAlchemy Async).
-- 📦 **Nixpacks**: Construcción automática y optimizada de contenedores.
-- 🐳 **Docker**: Lista para despliegue en contenedores.
+---
 
-## Variables de Entorno
+## 🚀 Características
 
-Para que la aplicación funcione correctamente, necesitas configurar la siguiente variable de entorno. En Dokploy, esto se hace en la sección de "Environment Variables" de tu aplicación.
+- **Gestión de Tareas (CRUD)**: Crear, leer, actualizar y eliminar tareas.
+- **Autenticación Segura (JWT)**: Login de usuarios y protección de rutas.
+- **Rate Limiting**: Protección contra abuso de API (usando `slowapi`).
+- **Logging**: Registro detallado de peticiones.
+- **Base de Datos Asíncrona**: SQLAlchemy + AsyncPG para alto rendimiento.
+- **Dockerizado**: Incluye `Dockerfile` multistage optimizado.
+- **Validación de Datos**: Schemas fuertes con Pydantic.
 
-| Variable       | Descripción                                   | Ejemplo                                                    |
-| -------------- | --------------------------------------------- | ---------------------------------------------------------- |
-| `DATABASE_URL` | URL de conexión a la base de datos PostgreSQL | `postgresql+asyncpg://usuario:password@host:5432/nombredb` |
+## 🛠️ Tecnologías
 
-> **Nota**: Asegúrate de usar el driver `asyncpg` en la URL de conexión (e.g., `postgresql+asyncpg://...`).
+- Python 3.11
+- FastAPI
+- PostgreSQL
+- Docker
+- SQLAlchemy (Async)
+- Pydantic
+- JWT (JSON Web Tokens)
 
-### Archivo .env
+---
 
-Para desarrollo local o para sobrescribir la configuración por defecto, crea un archivo `.env` en la raíz del proyecto. Hemos creado uno de ejemplo apuntando a tu servidor remoto:
+## 📦 Instalación y Ejecución
 
-```env
-DATABASE_URL=postgresql+asyncpg://user:password@37.27.243.58/dbname
-```
+### Opción 1: Usando Docker (Recomendado)
 
-## Desarrollo Local
-
-1. **Crear un entorno virtual**:
+1. **Construir la imagen:**
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # En Linux/macOS
-   # .\venv\Scripts\activate  # En Windows
+   docker build -t fastapi-tasks .
    ```
 
-2. **Instalar dependencias**:
+2. **Ejecutar el contenedor:**
+   ```bash
+   docker run -d -p 8000:8000 --env-file .env fastapi-tasks
+   ```
+
+### Opción 2: Ejecución Local
+
+1. **Clonar el repositorio:**
+
+   ```bash
+   git clone https://github.com/migbertweb/fastapi-tasks.git
+   cd fastapi-tasks
+   ```
+
+2. **Crear entorno virtual:**
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Instalar dependencias:**
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Ejecutar la aplicación**:
+4. **Variables de Entorno:**
+   Asegúrate de tener un archivo `.env` configurado con la URL de tu base de datos:
+
+   ```bash
+   DATABASE_URL=postgresql+asyncpg://user:password@localhost/dbname
+   ```
+
+5. **Iniciar el servidor:**
    ```bash
    uvicorn app.main:app --reload
    ```
-   La API estará disponible en `http://localhost:8000`.
-   Puedes ver la documentación interactiva en `http://localhost:8000/docs`.
 
-## Despliegue en Dokploy (vía Nixpacks)
+---
 
-Esta configuración utiliza **Nixpacks** para construir la imagen Docker de manera eficiente y sin configuración compleja.
+## 🔑 Uso de la API
 
-### Paso 1: Configuración en Dokploy
+La documentación interactiva está disponible en: `http://localhost:8000/docs`
 
-1.  Asegúrate de que tu proyecto en Dokploy esté configurado para usar **Nixpacks**.
-2.  Nixpacks detectará automáticamente `requirements.txt` y `nixpacks.toml`.
+### Flujo de Autenticación
 
-### Paso 2: Despliegue
+1. **Registro:** `POST /users/`
+   - Crea un nuevo usuario.
+2. **Login:** `POST /token`
+   - Envía `username` (email) y `password`.
+   - Recibe un `access_token`.
+3. **Usar Token:**
+   - Envía el token en el header `Authorization: Bearer <tu_token>` para acceder a las rutas de tareas `/tasks/`.
 
-Simplemente haz push de tus cambios a tu repositorio. Dokploy (con Nixpacks habilitado) se encargará de:
+---
 
-1.  Detectar que es una aplicación Python.
-2.  Instalar las dependencias de `requirements.txt`.
-3.  Usar el comando de inicio definido en `nixpacks.toml`: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+## 📄 Estructura del Proyecto
 
-No necesitas construir imágenes manualmente ni configurar Dockerfiles complejos.
+```
+.
+├── app
+│   ├── main.py      # Punto de entrada y rutas
+│   ├── models.py    # Modelos de base de datos
+│   ├── schemas.py   # Schemas Pydantic
+│   ├── crud.py      # Operaciones de base de datos
+│   ├── auth.py      # Lógica de autenticación
+│   ├── deps.py      # Dependencias (Current User)
+│   └── database.py  # Conexión a DB
+├── Dockerfile       # Configuración Docker
+├── railway.yaml     # Configuración Railway
+└── requirements.txt # Dependencias
+```
 
-## Endpoints (Probando con Postman)
+---
 
-- `POST /tasks/`: Crear tarea.
-  ```json
-  {
-    "title": "Aprender Nix",
-    "description": "Estudiar flakes y dockerTools"
-  }
-  ```
-- `GET /tasks/`: Listar tareas.
-- `GET /tasks/{id}`: Ver tarea.
-- `PUT /tasks/{id}`: Actualizar tarea.
-- `DELETE /tasks/{id}`: Borrar tarea.
+## 📜 Licencia
+
+Este proyecto está bajo la Licencia **GPL-3.0**. Consulta el archivo `LICENSE` para más detalles.
