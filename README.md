@@ -79,6 +79,18 @@ Un backend moderno y robusto para la gestión de tareas, construido con FastAPI,
    uvicorn app.main:app --reload
    ```
 
+### Opción 3: Despliegue en Dokploy
+
+1. **Crear Proyecto**: En tu panel de Dokploy, crea un nuevo proyecto.
+2. **Crear Servicio**: Selecciona "Application" y elige GitHub como fuente.
+3. **Seleccionar Repositorio**: Elige el repositorio `fastapi-tasks`.
+4. **Configuración de Build**:
+   - **Build Type**: Dockerfile (Dokploy detectará automáticamente el `Dockerfile`) o Nixpacks (gracias al `railpack.json`).
+   - Se recomienda usar **Dockerfile** para este proyecto ya que está optimizado multi-etapa.
+5. **Variables de Entorno**:
+   - En la pestaña "Environment", añade `DATABASE_URL` y cualquier otra variable necesaria (ej. `SECRET_KEY`).
+6. **Desplegar**: Haz clic en "Deploy". Dokploy construirá la imagen y lanzará el contenedor.
+
 ---
 
 ## 🔑 Uso de la API
