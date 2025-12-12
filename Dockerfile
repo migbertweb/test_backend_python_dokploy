@@ -1,4 +1,4 @@
-# Build Stage
+# Etapa de Construcción
 FROM python:3.11-slim as builder
 
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Run Stage
+# Etapa de Ejecución
 FROM python:3.11-slim as runner
 
 WORKDIR /app
@@ -22,13 +22,13 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Copy dependencies from builder
+# Copiar dependencias de la etapa de construcción
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 COPY . .
 
-# Create a non-root user
+# Crear un usuario no root
 RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
 

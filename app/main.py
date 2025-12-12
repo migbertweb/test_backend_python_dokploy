@@ -2,7 +2,7 @@
 Author: Migbert Yanez
 GitHub: https://github.com/migbertweb
 License: GPL-3.0
-Description: Main entry point for the FastAPI application. Configures the app, middleware, database connection, and defines API routes for users and tasks.
+Description: Punto de entrada principal para la aplicación FastAPI. Configura la aplicación, el middleware, la conexión a la base de datos y define las rutas de la API para usuarios y tareas.
 """
 from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
@@ -21,11 +21,15 @@ import logging
 from . import crud, models, schemas, auth, deps
 from .database import engine, get_db, Base
 
-# Logging setup
+# Configuración de logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class LoggingMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware para registrar cada solicitud HTTP que entra a la aplicación.
+    Mide el tiempo de procesamiento y registra el método, URL y código de estado.
+    """
     async def dispatch(self, request: Request, call_next):
         start_time = time.time()
         response = await call_next(request)
@@ -33,12 +37,16 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logger.info(f"{request.method} {request.url} - {response.status_code} - {process_time:.4f}s")
         return response
 
-# Rate Limiting setup
+# Configuración de límites de velocidad (Rate Limiting)
 limiter = Limiter(key_func=get_remote_address)
 
-# Create tables setup
+# Configuración para crear tablas al inicio
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    Gestor de contexto para el ciclo de vida de la aplicación.
+    Crea las tablas de la base de datos al iniciar la aplicación.
+    """
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
@@ -52,11 +60,14 @@ app.add_middleware(LoggingMiddleware)
 @app.post("/token", response_model=schemas.Token)
 @limiter.limit("5/minute")
 async def login_for_access_token(request: Request, form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: AsyncSession = Depends(get_db)):
+    """
+    Endpoint para autenticar usuarios y obtener un token de acceso (JWT).
+    """
     user = await crud.get_user_by_email(db, email=form_data.username)
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Nombre de usuario o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -70,7 +81,7 @@ async def login_for_access_token(request: Request, form_data: Annotated[OAuth2Pa
 async def create_user(request: Request, user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await crud.get_user_by_email(db, email=user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
     return await crud.create_user(db=db, user=user)
 
 @app.post("/tasks/", response_model=schemas.Task)
@@ -86,9 +97,9 @@ async def read_tasks(skip: int = 0, limit: int = 100, db: AsyncSession = Depends
     """
     Obtener lista de tareas con paginación.
     """
-    # Note: In a real app we might want to filter by owner only
-    # tasks = await crud.get_tasks(db, skip=skip, limit=limit) 
-    # For now returning all similarly to previous state but authenticated needed
+    # Nota: En una aplicación real, querríamos filtrar solo por el propietario
+    # tasks = await crud.get_tasks(db, skip=skip, limit=limit)
+    # Por ahora devolvemos todas, similar al estado anterior, pero se requiere autenticación
     tasks = await crud.get_tasks(db, skip=skip, limit=limit)
     return tasks
 

@@ -2,13 +2,17 @@
 Author: Migbert Yanez
 GitHub: https://github.com/migbertweb
 License: GPL-3.0
-Description: Database configuration utilizing SQLAlchemy and AsyncPG for asynchronous database connections.
+Description: Configuración de la base de datos utilizando SQLAlchemy y AsyncPG para conexiones asíncronas.
 """
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    """
+    Configuración de la aplicación utilizando Pydantic BaseSettings.
+    Lee las variables de entorno para la configuración de la base de datos y JWT.
+    """
     DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/dbname"
     SECRET_KEY: str = "YOUR_SECRET_KEY"
     ALGORITHM: str = "HS256"
@@ -28,5 +32,9 @@ class Base(DeclarativeBase):
     pass
 
 async def get_db():
+    """
+    Generador de dependencias para obtener una sesión de base de datos asíncrona.
+    """
     async with SessionLocal() as session:
         yield session
+

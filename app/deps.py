@@ -2,7 +2,7 @@
 Author: Migbert Yanez
 GitHub: https://github.com/migbertweb
 License: GPL-3.0
-Description: Dependency injection module providing shared resources like database sessions and the current authenticated user.
+Description: Módulo de inyección de dependencias que proporciona recursos compartidos como sesiones de base de datos y el usuario autenticado actual.
 """
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -14,9 +14,13 @@ from .database import get_db
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+    """
+    Obtiene el usuario actual basado en el token JWT proporcionado.
+    Valida el token y recupera el usuario de la base de datos.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="No se pudieron validar las credenciales",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -31,3 +35,4 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     if user is None:
         raise credentials_exception
     return user
+
