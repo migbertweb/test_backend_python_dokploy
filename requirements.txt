@@ -8,3 +8,6 @@ passlib[bcrypt]
 python-multipart
 slowapi
 email-validator
+# Drivers adicionales para otras bases de datos (Descomentar si se usa)
+# aiosqlite  # Para SQLite
+# aiomysql   # Para MariaDB/MySQL

@@ -27,6 +27,39 @@ Un backend moderno y robusto para la gestión de tareas, construido con FastAPI,
 - SQLAlchemy (Async)
 - Pydantic
 - JWT (JSON Web Tokens)
+- Bases de datos soportadas (Driver requerido):
+  - PostgreSQL (asyncpg - Default)
+  - SQLite (aiosqlite)
+  - MariaDB/MySQL (aiomysql)
+
+---
+
+## 🔄 Cambiar Base de Datos
+
+El proyecto está configurado por defecto para usar **PostgreSQL**. Si deseas cambiar a **SQLite** o **MariaDB**, sigue estos pasos:
+
+### Para usar SQLite
+
+1. Agrega el driver en `requirements.txt`:
+   ```text
+   aiosqlite
+   ```
+2. Modifica la variable `DATABASE_URL` en tu archivo `.env` o en `app/database.py`:
+   ```python
+   DATABASE_URL="sqlite+aiosqlite:///./sql_app.db"
+   ```
+   _Nota: Para SQLite el archivo de base de datos se creará en el directorio local._
+
+### Para usar MariaDB / MySQL
+
+1. Agrega el driver en `requirements.txt`:
+   ```text
+   aiomysql
+   ```
+2. Modifica la variable `DATABASE_URL` en tu archivo `.env` o en `app/database.py`:
+   ```python
+   DATABASE_URL="mysql+aiomysql://usuario:password@localhost/nombre_db"
+   ```
 
 ---
 

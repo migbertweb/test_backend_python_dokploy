@@ -13,7 +13,15 @@ class Settings(BaseSettings):
     Configuración de la aplicación utilizando Pydantic BaseSettings.
     Lee las variables de entorno para la configuración de la base de datos y JWT.
     """
+    # PostgreSQL (Por defecto)
     DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/dbname"
+    
+    # SQLite (Descomentar para usar)
+    # DATABASE_URL: str = "sqlite+aiosqlite:///./sql_app.db"
+    
+    # MariaDB / MySQL (Descomentar para usar)
+    # DATABASE_URL: str = "mysql+aiomysql://user:password@localhost/dbname"
+
     SECRET_KEY: str = "YOUR_SECRET_KEY"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
