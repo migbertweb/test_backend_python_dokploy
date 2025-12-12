@@ -14,10 +14,10 @@ class Settings(BaseSettings):
     Lee las variables de entorno para la configuración de la base de datos y JWT.
     """
     # PostgreSQL (Por defecto)
-    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/dbname"
+    # DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/dbname"
     
     # SQLite (Descomentar para usar)
-    # DATABASE_URL: str = "sqlite+aiosqlite:///./sql_app.db"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./sql_app.db"
     
     # MariaDB / MySQL (Descomentar para usar)
     # DATABASE_URL: str = "mysql+aiomysql://user:password@localhost/dbname"
