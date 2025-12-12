@@ -2,7 +2,7 @@
 Author: Migbert Yanez
 GitHub: https://github.com/migbertweb
 License: GPL-3.0
-Description: Configuración de la base de datos utilizando SQLAlchemy y AsyncPG para conexiones asíncronas.
+Description: Configuración de la base de datos utilizando SQLAlchemy con soporte para múltiples bases de datos (PostgreSQL, SQLite, MariaDB).
 """
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
