@@ -6,6 +6,7 @@ Description: Funciones para operaciones Crear, Leer, Actualizar y Eliminar (CRUD
 """
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from . import models, schemas
 from .auth import get_password_hash
 
@@ -20,7 +21,7 @@ async def get_user_by_email(db: AsyncSession, email: str):
     """
     Obtiene un usuario por su correo electrónico.
     """
-    result = await db.execute(select(models.User).filter(models.User.email == email))
+    result = await db.execute(select(models.User).options(selectinload(models.User.tasks)).filter(models.User.email == email))
     return result.scalars().first()
 
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
@@ -32,7 +33,14 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
-    return db_user
+    
+    # Manually construct the Pydantic model to avoid async lazy loading of 'tasks'
+    return schemas.User(
+        id=db_user.id,
+        email=db_user.email,
+        is_active=db_user.is_active,
+        tasks=[]
+    )
 
 async def get_task(db: AsyncSession, task_id: int):
     """

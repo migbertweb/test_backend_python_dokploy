@@ -5,6 +5,7 @@ License: GPL-3.0
 Description: Punto de entrada principal para la aplicación FastAPI. Configura la aplicación, el middleware, la conexión a la base de datos y define las rutas de la API para usuarios y tareas.
 """
 from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
@@ -56,6 +57,14 @@ app = FastAPI(title="Gestor de Tareas API", description="API para gestionar tare
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(LoggingMiddleware)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/token", response_model=schemas.Token)
 @limiter.limit("5/minute")
