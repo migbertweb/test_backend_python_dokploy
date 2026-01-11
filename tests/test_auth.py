@@ -20,6 +20,19 @@ async def test_login_success(client):
     assert data["token_type"] == "bearer"
 
 @pytest.mark.asyncio
+async def test_login_json_success(client):
+    email = "json@example.com"
+    password = "jsonpassword"
+    await client.post("/users/", json={"email": email, "password": password})
+    
+    response = await client.post(
+        "/token",
+        json={"username": email, "password": password}
+    )
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+
+@pytest.mark.asyncio
 async def test_login_invalid_credentials(client):
     response = await client.post(
         "/token",

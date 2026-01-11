@@ -80,15 +80,41 @@ app.add_middleware(LoggingMiddleware)
 @limiter.limit("5/minute")
 async def login_for_access_token(
     request: Request,
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_db)
 ):
     """
     Endpoint para autenticar usuarios y obtener un token de acceso (JWT).
-    Cumple con el estándar OAuth2 para que aparezca correctamente en la documentación (Swagger).
+    Soporta tanto JSON (para el frontend) como Form Data (para Swagger/OAuth2).
     """
-    user = await crud.get_user_by_email(db, email=form_data.username)
-    if not user or not auth.verify_password(form_data.password, user.hashed_password):
+    username = None
+    password = None
+
+    # Intentar obtener datos de JSON primero (Axios frontend)
+    try:
+        if "application/json" in request.headers.get("content-type", ""):
+            data = await request.json()
+            username = data.get("username") or data.get("email")
+            password = data.get("password")
+    except Exception:
+        pass
+
+    # Si no es JSON o faltan campos, intentar Form Data (estándar OAuth2 / Swagger)
+    if not username or not password:
+        try:
+            form_data = await request.form()
+            username = form_data.get("username")
+            password = form_data.get("password")
+        except Exception:
+            pass
+
+    if not username or not password:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Se requiere usuario (username/email) y contraseña. Si usas JSON, envía 'username' y 'password'.",
+        )
+
+    user = await crud.get_user_by_email(db, email=username)
+    if not user or not auth.verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nombre de usuario o contraseña incorrectos",
