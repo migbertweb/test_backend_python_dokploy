@@ -32,7 +32,15 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-engine = create_async_engine(settings.DATABASE_URL, echo=True)
+def get_async_url(url: str) -> str:
+    """
+    Asegura que la URL de la base de datos utilice el driver asíncrono correcto.
+    """
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    return url
+
+engine = create_async_engine(get_async_url(settings.DATABASE_URL), echo=True)
 
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
