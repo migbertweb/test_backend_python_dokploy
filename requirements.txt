@@ -10,5 +10,5 @@ slowapi
 email-validator
 # Drivers adicionales para otras bases de datos (Descomentar si se usa)
 aiosqlite  # Para SQLite
-# asyncpg  # Para PostgreSQL
-# aiomysql   # Para MariaDB/MySQL
+asyncpg  # Para PostgreSQL
+aiomysql   # Para MariaDB/MySQL
