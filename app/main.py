@@ -60,7 +60,12 @@ app.add_middleware(LoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://testdeploy-frontend-hxlr7l-ae86ae-37-27-243-58.traefik.me", "https://test.migbertweb.xyz", "https://test.migbertweb.xyz/*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://testdeploy-frontend-hxlr7l-ae86ae-37-27-243-58.traefik.me",
+        "https://test.migbertweb.xyz"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
