@@ -12,3 +12,6 @@ email-validator
 aiosqlite  # Para SQLite
 asyncpg  # Para PostgreSQL
 aiomysql   # Para MariaDB/MySQL
+pytest
+pytest-asyncio
+httpx

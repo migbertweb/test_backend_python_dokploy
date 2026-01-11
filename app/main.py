@@ -78,39 +78,16 @@ app.add_middleware(LoggingMiddleware)
 
 @app.post("/token", response_model=schemas.Token)
 @limiter.limit("5/minute")
-async def login_for_access_token(request: Request, db: AsyncSession = Depends(get_db)):
+async def login_for_access_token(
+    request: Request,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: AsyncSession = Depends(get_db)
+):
     """
     Endpoint para autenticar usuarios y obtener un token de acceso (JWT).
-    Soporta tanto JSON como Form Data.
+    Cumple con el estándar OAuth2 para que aparezca correctamente en la documentación (Swagger).
     """
-    username = None
-    password = None
-
-    # Intentar obtener datos de JSON primero
-    try:
-        if request.headers.get("content-type") == "application/json":
-            data = await request.json()
-            username = data.get("username") or data.get("email")
-            password = data.get("password")
-    except Exception:
-        pass
-
-    # Si no es JSON o falló, intentar Form Data (estándar OAuth2)
-    if not username or not password:
-        try:
-            form_data = await request.form()
-            username = form_data.get("username")
-            password = form_data.get("password")
-        except Exception:
-            pass
-
-    if not username or not password:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Se requiere usuario (username/email) y contraseña",
-        )
-
-    user = await crud.get_user_by_email(db, email=username)
+    user = await crud.get_user_by_email(db, email=form_data.username)
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
