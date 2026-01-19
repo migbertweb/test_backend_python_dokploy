@@ -1,3 +1,4 @@
+# realizado
 # Etapa de Construcción
 FROM python:3.11-slim as builder
 
